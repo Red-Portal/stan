@@ -34,7 +34,7 @@ namespace model {
 template <bool jacobian_adjust_transform, class M>
 double log_prob_propto(const M& model, std::vector<double>& params_r,
                        std::vector<int>& params_i, std::ostream* msgs = 0) {
-  auto scope_measurer = perf::global_profiler.measure_scope_like();
+  auto scope_measurer = prof::global_profiler.measure_scope_like();
 
   using stan::math::var;
   using std::vector;
@@ -78,7 +78,7 @@ double log_prob_propto(const M& model, std::vector<double>& params_r,
 template <bool jacobian_adjust_transform, class M>
 double log_prob_propto(const M& model, Eigen::VectorXd& params_r,
                        std::ostream* msgs = 0) {
-  auto scope_measurer = perf::global_profiler.measure_scope_like();
+  auto scope_measurer = prof::global_profiler.measure_scope_like();
 
   using stan::math::var;
   using std::vector;
