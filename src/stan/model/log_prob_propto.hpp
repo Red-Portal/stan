@@ -5,6 +5,8 @@
 #include <iostream>
 #include <vector>
 
+#include <stan/analyze/mcmc/model_profiling.hpp>
+
 namespace stan {
 namespace model {
 
@@ -32,6 +34,8 @@ namespace model {
 template <bool jacobian_adjust_transform, class M>
 double log_prob_propto(const M& model, std::vector<double>& params_r,
                        std::vector<int>& params_i, std::ostream* msgs = 0) {
+  auto scope_measurer = perf::global_profiler.measure_scope_like();
+
   using stan::math::var;
   using std::vector;
   vector<var> ad_params_r;
@@ -74,6 +78,8 @@ double log_prob_propto(const M& model, std::vector<double>& params_r,
 template <bool jacobian_adjust_transform, class M>
 double log_prob_propto(const M& model, Eigen::VectorXd& params_r,
                        std::ostream* msgs = 0) {
+  auto scope_measurer = perf::global_profiler.measure_scope_like();
+
   using stan::math::var;
   using std::vector;
   vector<int> params_i(0);
