@@ -11,6 +11,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include <stan/analyze/mcmc/model_profiling.hpp>
+
 namespace stan {
 namespace mcmc {
 
@@ -60,6 +62,10 @@ class base_hamiltonian {
   }
 
   void update_potential_gradient(Point& z, callbacks::logger& logger) {
+    auto scope_measurer = prof::global_profiler.measure_scope_gradlike();
+    scope_measurer.start();
+    std::cout << "gradient!!!" << std::endl;
+
     try {
       stan::model::gradient(model_, z.q, z.V, z.g, logger);
       z.V = -z.V;

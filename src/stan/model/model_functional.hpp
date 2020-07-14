@@ -4,6 +4,8 @@
 #include <stan/math/prim/fun/Eigen.hpp>
 #include <iostream>
 
+#include <stan/analyze/mcmc/model_profiling.hpp>
+
 namespace stan {
 namespace model {
 
@@ -18,6 +20,8 @@ struct model_functional {
   template <typename T>
   T operator()(const Eigen::Matrix<T, Eigen::Dynamic, 1>& x) const {
     // log_prob() requires non-const but doesn't modify its argument
+    auto scope_measurer = prof::global_profiler.measure_scope_like();
+    scope_measurer.start();
     return model.template log_prob<true, true, T>(
         const_cast<Eigen::Matrix<T, -1, 1>&>(x), o);
   }

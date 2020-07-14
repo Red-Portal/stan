@@ -14,20 +14,27 @@ namespace prof
   {
     using clock = std::chrono::steady_clock;
 
-    std::atomic<uint64_t>& _dest;
-    std::atomic<uint64_t>& _counter;
+    std::atomic<int64_t>& _dest;
+    std::atomic<int64_t>& _counter;
     std::chrono::time_point<clock> _start;
 
   public:
-    inline ScopeTimer(std::atomic<uint64_t>& dest,
-		      std::atomic<uint64_t>& counter) noexcept
-      : _dest(dest), _counter(counter), _start(clock::now())
+    inline
+    ScopeTimer(std::atomic<int64_t>& dest,
+	       std::atomic<int64_t>& counter) noexcept
+      : _dest(dest), _counter(counter), _start()
     {}
 
-    inline ~ScopeTimer() noexcept
+    inline void
+    start() noexcept
     {
-      auto stop  = clock::now();
-      auto dur   = stop - _start;
+      _start = clock::now();
+    }
+
+    inline
+    ~ScopeTimer() noexcept
+    {
+      auto dur   = clock::now() - _start;
       auto ticks = std::chrono::duration_cast<prof::duration>(dur).count();
       _dest.fetch_add(ticks);
       _counter.fetch_add(1);
@@ -40,10 +47,10 @@ namespace prof
 
   private:
     std::chrono::time_point<clock> _global_start;
-    std::atomic<uint64_t>          _total_like;
-    std::atomic<uint64_t>          _total_gradlike;
-    std::atomic<uint64_t>          _num_like_eval;
-    std::atomic<uint64_t>          _num_gradlike_eval;
+    std::atomic<int64_t>          _total_like;
+    std::atomic<int64_t>          _total_gradlike;
+    std::atomic<int64_t>          _num_like_eval;
+    std::atomic<int64_t>          _num_gradlike_eval;
 
   public:
     inline GlobalProfiler() noexcept
@@ -71,19 +78,23 @@ namespace prof
     }
 
     inline void
-    dump_result(uint64_t* like_total,
-		uint64_t* grad_total,
-		double* like_avg,
+    dump_result(int64_t* like_total,
+		int64_t* grad_total,
+		double*   like_avg,
 		double*   grad_avg,
-		uint64_t*   total_time) noexcept
+		int64_t* num_like_eval,
+		int64_t* num_grad_eval,
+		int64_t* total_time) noexcept
     {
-      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-	_global_start - clock::now());
-      *like_total = _total_like.load();
-      *grad_total = _total_gradlike.load();
-      *like_avg   = static_cast<double>(*like_total) / _num_like_eval.load();
-      *grad_avg   = static_cast<double>(*grad_total) / _num_gradlike_eval.load();
-      *total_time = duration.count();
+      auto duration = std::chrono::duration_cast<
+	std::chrono::milliseconds>(clock::now() - _global_start);
+      *like_total    = _total_like.load();
+      *grad_total    = _total_gradlike.load();
+      *num_like_eval = _num_like_eval.load();
+      *num_grad_eval = _num_gradlike_eval.load();
+      *like_avg      = static_cast<double>(*like_total) / *num_like_eval;
+      *grad_avg      = static_cast<double>(*grad_total) / *num_grad_eval;
+      *total_time    = duration.count();
     }
   };
 

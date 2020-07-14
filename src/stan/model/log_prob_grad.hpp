@@ -32,6 +32,7 @@ double log_prob_grad(const M& model, std::vector<double>& params_r,
                      std::vector<int>& params_i, std::vector<double>& gradient,
                      std::ostream* msgs = 0) {
   auto scope_measurer = prof::global_profiler.measure_scope_gradlike();
+  scope_measurer.start();
 
   using stan::math::var;
   using std::vector;
@@ -73,6 +74,7 @@ template <bool propto, bool jacobian_adjust_transform, class M>
 double log_prob_grad(const M& model, Eigen::VectorXd& params_r,
                      Eigen::VectorXd& gradient, std::ostream* msgs = 0) {
   auto scope_measurer = prof::global_profiler.measure_scope_gradlike();
+  scope_measurer.start();
 
   using stan::math::var;
   using std::vector;
