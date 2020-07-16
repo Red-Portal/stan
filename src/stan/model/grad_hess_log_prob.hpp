@@ -36,6 +36,9 @@ double grad_hess_log_prob(const M& model, std::vector<double>& params_r,
                           std::vector<double>& gradient,
                           std::vector<double>& hessian,
                           std::ostream* msgs = 0) {
+  auto scope_measurer = prof::global_profiler.measure_scope_gradlike();
+  scope_measurer.start();
+
   static const double epsilon = 1e-3;
   static const double half_epsilon = 0.5 * epsilon;
   static const int order = 4;

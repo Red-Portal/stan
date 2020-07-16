@@ -4,6 +4,7 @@
 #include <stan/math/mix.hpp>
 #include <stan/model/model_functional.hpp>
 #include <iostream>
+#include <stan/analyze/mcmc/model_profiling.hpp>
 
 namespace stan {
 namespace model {
@@ -14,6 +15,8 @@ void gradient_dot_vector(const M& model,
                          const Eigen::Matrix<double, Eigen::Dynamic, 1>& v,
                          double& f, double& grad_f_dot_v,
                          std::ostream* msgs = 0) {
+  auto scope_measurer = prof::global_profiler.measure_scope_gradlike();
+  scope_measurer.start();
   stan::math::gradient_dot_vector(model_functional<M>(model, msgs), x, v, f,
                                   grad_f_dot_v);
 }

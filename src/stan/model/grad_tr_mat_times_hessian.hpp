@@ -14,6 +14,8 @@ void grad_tr_mat_times_hessian(
     const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>& X,
     Eigen::Matrix<double, Eigen::Dynamic, 1>& grad_tr_X_hess_f,
     std::ostream* msgs = 0) {
+  auto scope_measurer = prof::global_profiler.measure_scope_gradlike();
+  scope_measurer.start();
   stan::math::grad_tr_mat_times_hessian(model_functional<M>(model, msgs), x, X,
                                         grad_tr_X_hess_f);
 }

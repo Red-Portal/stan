@@ -19,9 +19,9 @@ struct model_functional {
 
   template <typename T>
   T operator()(const Eigen::Matrix<T, Eigen::Dynamic, 1>& x) const {
-    // log_prob() requires non-const but doesn't modify its argument
     auto scope_measurer = prof::global_profiler.measure_scope_like();
     scope_measurer.start();
+    // log_prob() requires non-const but doesn't modify its argument
     return model.template log_prob<true, true, T>(
         const_cast<Eigen::Matrix<T, -1, 1>&>(x), o);
   }
